@@ -18,7 +18,8 @@ Optimize GUI Emacs startup overhead by importing environment variables during by
 (wiz-envs "PATH" "SSH_AUTH_SOCK" "MANPATH" "GOPATH")
 ```
 
-This expression expands as the Lisp code below:
+<details>
+<summary>Expression Expanding into the Following Lisp Code:</summary>
 
 ```emacs-lisp
 (unless window-system
@@ -32,3 +33,4 @@ This expression expands as the Lisp code below:
     (setenv "GOPATH" "/Users/megurine/repo/go")))
 ```
 
+</details>
