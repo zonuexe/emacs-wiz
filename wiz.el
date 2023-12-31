@@ -50,8 +50,8 @@
                   (list
                    (list 'load (eval expr))))
      :assert-after (lambda (v)
-                     (unless (stringp (nth 1 v))
-                       (error "(:load file): `file' must be evalute as string %s" v))))
+                     (unless (stringp (nth 1 (car v)))
+                       (error "(:load file): `file' must be evalute as string %S" (car v)))))
     (:config
      :assert-before (lambda (v)
                       (unless (and (listp v) (eq 'lambda (car v)))
