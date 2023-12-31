@@ -75,9 +75,9 @@
                          (or wiz--hook-name
                              (let ((name (symbol-name wiz--feature-name)))
                                (intern (format "%s-hook"
-                                               (if (string-match-p "-mode" wiz--feature-name)
-                                                   wiz--feature-name
-                                                 (concat wiz--feature-name "-mode"))))))))
+                                               (if (string-match-p "-mode" name)
+                                                   name
+                                                 (concat name "-mode"))))))))
                     `((add-hook ,(list 'quote target-hook-name)
                                 ,(list 'function setup-hook-name))
                        ,expr))))
