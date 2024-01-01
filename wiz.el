@@ -91,13 +91,14 @@
 (defun wiz--assert-feature-spec (feature-name plist)
   "Assert wiz FEATURE-NAME feature spec PLIST."
   (cl-check-type feature-name symbol)
-  (cl-loop for (key value) on plist by #'cddr
+  (cl-loop for (key _value) on plist by #'cddr
            for spec = (cdr-safe (assq key wiz-keywords))
            unless spec
            do (error "`%s' is unexpected keyword for wiz" key)))
 
 (defun wiz--feature-process-1 (feature-name plist keyword spec)
   "Process wiz FEATURE-NAME feature SPEC for PLIST of KEYWORD."
+  (cl-check-type feature-name symbol)
   (when-let (value (plist-get plist keyword))
     (let ((assert-before (or (plist-get spec :assert-before) #'always))
           (transform (plist-get spec :transform))
