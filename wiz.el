@@ -78,7 +78,7 @@
                                                      (if (string-match-p "-mode" name)
                                                          name
                                                        (concat name "-mode")))))))))
-                    `(,(mapcar (lambda (target-hook-name)
+                    `(,@(mapcar (lambda (target-hook-name)
                                  `(add-hook ,(list 'quote target-hook-name)
                                             ,(list 'function setup-hook-name)))
                               target-hook-names)
