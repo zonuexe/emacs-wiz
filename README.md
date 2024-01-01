@@ -32,6 +32,7 @@ This expression is expanded into the following S-expression:
 
 > [!NOTE]
 > You can check the macro expansion result with `M-x pp-macroexpand-last-sexp`.
+> Other expansion examples can also be found in Emacs with `M-x shortdoc wiz`.
 
 ### Config with mode hook
 
