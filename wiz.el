@@ -86,7 +86,7 @@
     (:init
      :transform (lambda (expr)
                   (list
-                   `(progn ,(caddr expr)))))))
+                   `(progn ,(cddr expr)))))))
 
 (defun wiz--assert-feature-spec (feature-name plist)
   "Assert wiz FEATURE-NAME feature spec PLIST."
