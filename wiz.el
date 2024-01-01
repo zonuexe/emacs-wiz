@@ -58,7 +58,7 @@
                         (error "(config :proc) `proc' must be lambda expression")))
      :transform (lambda (expr)
                   (list
-                   (list 'with-eval-after-load (list 'quote wiz--feature-name) (caddr expr)))))
+                   (list 'with-eval-after-load (list 'quote wiz--feature-name) (cddr expr)))))
     (:hook-names
      :assert-before (lambda (names)
                       (unless (and (listp names) (cl-every #'symbolp names))
