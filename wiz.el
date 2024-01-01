@@ -120,7 +120,7 @@
   (declare (indent defun))
   (wiz--assert-feature-spec feature-name plist)
   (unless (require feature-name nil t)
-    (user-error "Wiz: feature `%s' is not a available feature name"))
+    (user-error "Wiz: feature `%s' is not a available feature name" feature-name))
   (cons 'prog1 (cons (list 'quote feature-name) (wiz--feature-process feature-name plist))))
 
 (provide 'wiz)
