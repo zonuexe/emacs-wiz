@@ -2,6 +2,22 @@
 
 A collection of macros that optimize startup performance by byte-compiling `init.el`.
 
+## Installation
+
+This package requires Emacs 29.1+.
+
+### Use package.el
+
+``` emacs-lisp
+(package-vc-install "git@github.com:zonuexe/emacs-wiz.git" nil 'Git 'wiz)
+```
+
+### Use [Borg](https://github.com/emacscollective/borg)
+
+```emacs-lisp
+(borg-assimilate "wiz" "git@github.com:zonuexe/emacs-wiz.git")
+```
+
 ## wiz.el
 
 Shorthand macro for feature configuration for `init.el`. These are expanded to the minimum code by byte compilation.
