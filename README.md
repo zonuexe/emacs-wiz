@@ -73,7 +73,7 @@ This expression is expanded into the following S-expression:
  * `:load string`
  * `:init function`
  * `:config function`
- * `:hook-name symbol`
+ * `:hook-names (list symbol)`
  * `:setup-hook function`
 
 ### vs use-package, leaf

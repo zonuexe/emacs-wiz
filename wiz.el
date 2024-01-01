@@ -32,7 +32,7 @@
   (require 'cl-lib))
 
 (defvar wiz--feature-name)
-(defvar wiz--hook-name)
+(defvar wiz--hook-names)
 
 (defcustom wiz-feature-hook-name-template "init-%s-setup"
   "Template for setup function name."
@@ -59,27 +59,29 @@
      :transform (lambda (expr)
                   (list
                    (list 'with-eval-after-load (list 'quote wiz--feature-name) (caddr expr)))))
-    (:hook-name
-     :assert-before (lambda (name)
-                      (unless (symbolp name)
-                        (error "(:hook-name %s): `name' must be symbol" name))
-                      (unless (boundp name)
-                        (error "(:hook-name %s): `name' must be existing hook name" name)))
-     :transform (lambda (name)
+    (:hook-names
+     :assert-before (lambda (names)
+                      (unless (and (listp names) (cl-every #'symbolp names))
+                        (error "(:hook-names %S): `names' must be list of symbols" names))
+                      (unless (cl-every #'boundp names)
+                        (error "(:hook-names %S): `names' must be existing hook name" names)))
+     :transform (lambda (names)
                   (prog1 nil
-                    (setq wiz--hook-name name))))
+                    (setq wiz--hook-names names))))
     (:setup-hook
      :transform (lambda (expr)
                   (let ((setup-hook-name (nth 1 expr))
-                        (target-hook-name
-                         (or wiz--hook-name
+                        (target-hook-names
+                         (or wiz--hook-names
                              (let ((name (symbol-name wiz--feature-name)))
-                               (intern (format "%s-hook"
-                                               (if (string-match-p "-mode" name)
-                                                   name
-                                                 (concat name "-mode"))))))))
-                    `((add-hook ,(list 'quote target-hook-name)
-                                ,(list 'function setup-hook-name))
+                               (list (intern (format "%s-hook"
+                                                     (if (string-match-p "-mode" name)
+                                                         name
+                                                       (concat name "-mode")))))))))
+                    `(,(mapcar (lambda (target-hook-name)
+                                 `(add-hook ,(list 'quote target-hook-name)
+                                            ,(list 'function setup-hook-name)))
+                              target-hook-names)
                        ,expr))))
     (:init
      :transform (lambda (expr)
@@ -109,7 +111,7 @@
 (defun wiz--feature-process (feature-name plist)
   "Process wiz FEATURE-NAME spec by PLIST."
   (let ((wiz--feature-name feature-name)
-        wiz--hook-name)
+        wiz--hook-names)
     (cl-loop for (keyword . spec) in wiz-keywords
              for transformed = (wiz--feature-process-1 feature-name plist keyword spec)
              if transformed
