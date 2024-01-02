@@ -29,6 +29,7 @@
 
 ;;; Code:
 (eval-when-compile
+  (require 'macroexp)
   (require 'cl-lib))
 (require 'exec-path-from-shell)
 
@@ -58,9 +59,7 @@
            (cl-loop for name in names-list
                     for sexp = (wiz-env--1 name envs)
                     if sexp
-                    append (if (eq 'progn (car sexp))
-                               (cdr sexp)
-                             (list sexp)))))))
+                    append (macroexp-unprogn sexp))))))
 
 (provide 'wiz-env)
 ;;; wiz-env.el ends here
