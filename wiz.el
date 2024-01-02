@@ -29,6 +29,7 @@
 
 ;;; Code:
 (eval-when-compile
+  (require 'pcase)
   (require 'cl-lib))
 
 (defvar wiz--feature-name)
@@ -56,9 +57,14 @@
      :assert-before (lambda (v)
                       (unless (and (listp v) (eq 'lambda (car v)))
                         (error "(config :proc) `proc' must be lambda expression")))
-     :transform (lambda (expr)
-                  (list
-                   (list 'with-eval-after-load (list 'quote wiz--feature-name) (cddr expr)))))
+     :transform ,(lambda (expr)
+                   (list
+                    (pcase expr
+                      (`(lambda . (() . ,body))
+                       (cons 'with-eval-after-load
+                             (cons (list 'quote wiz--feature-name)
+                                   body)))
+                      (_ (error "%S is unexpected form" expr))))) )
     (:hook-names
      :assert-before (lambda (names)
                       (unless (and (listp names) (cl-every #'symbolp names))
@@ -69,24 +75,27 @@
                   (prog1 nil
                     (setq wiz--hook-names names))))
     (:setup-hook
-     :transform (lambda (expr)
-                  (let ((setup-hook-name (nth 1 expr))
-                        (target-hook-names
-                         (or wiz--hook-names
-                             (let ((name (symbol-name wiz--feature-name)))
-                               (list (intern (format "%s-hook"
-                                                     (if (string-match-p "-mode" name)
-                                                         name
-                                                       (concat name "-mode")))))))))
-                    `(,@(mapcar (lambda (target-hook-name)
-                                 `(add-hook ,(list 'quote target-hook-name)
-                                            ,(list 'function setup-hook-name)))
-                              target-hook-names)
+     :transform ,(lambda (expr)
+                   (let ((setup-hook-name (nth 1 expr))
+                         (target-hook-names
+                          (or wiz--hook-names
+                              (let ((name (symbol-name wiz--feature-name)))
+                                (list (intern (format "%s-hook"
+                                                      (if (string-match-p "-mode" name)
+                                                          name
+                                                        (concat name "-mode")))))))))
+                     `(,@(mapcar (lambda (target-hook-name)
+                                   `(add-hook ,(list 'quote target-hook-name)
+                                              ,(list 'function setup-hook-name)))
+                                 target-hook-names)
                        ,expr))))
     (:init
-     :transform (lambda (expr)
-                  (list
-                   `(progn ,(cddr expr)))))))
+     :transform ,(lambda (expr)
+                   (list
+                    (pcase expr
+                      (`(lambda . (() . ,body))
+                       (cons 'progn body))
+                      (_ (error "%S is unexpected form" expr))))))))
 
 (defun wiz--assert-feature-spec (feature-name plist)
   "Assert wiz FEATURE-NAME feature spec PLIST."
