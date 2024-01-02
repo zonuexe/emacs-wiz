@@ -1,10 +1,10 @@
 ;;; wiz.el --- Macros to simplify startup initialization  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023  USAMI Kenta
+;; Copyright (C) 2024  USAMI Kenta
 
 ;; Author: USAMI Kenta <tadsan@zonu.me>
 ;; Created: 01 Dec 2023
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Keywords: convenience, lisp
 ;; Homepage: https://github.com/zonuexe/emacs-wiz
 ;; Package-Requires: ((emacs "29.1") (exec-path-from-shell "2.1"))

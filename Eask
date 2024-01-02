@@ -1,11 +1,11 @@
 (package "wiz"
-         "0.0.1"
+         "0.0.2"
          "Macros to simplify Emacs startup initialization")
 
 (website-url "https://github.com/zonuexe/emacs-wiz")
 (keywords "convenience" "lisp")
 
-(package-file "wiz-env.el")
+(package-file "wiz.el")
 
 (script "test" "echo \"Error: no test specified\" && exit 1")
 
