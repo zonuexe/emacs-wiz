@@ -4,7 +4,7 @@ All notable changes of this package are documented in this file using the [Keep 
 
 [Keep a Changelog]: https://keepachangelog.com/
 
-## Unreleased
+## [0.0.3]
 
 ### Added
 
