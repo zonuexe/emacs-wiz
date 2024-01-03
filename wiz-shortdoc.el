@@ -26,31 +26,33 @@
 ;; Shortdoc implementation for wiz.
 
 ;;; Code:
-(when (eval-when-compile (require 'shortdoc nil t))
-  (define-short-documentation-group wiz
-    "Wiz for activate feature"
-    (wiz
-      :eval (macroexpand
-             '(wiz nyan-mode))
-      :eval (macroexpand
-             '(wiz php-mode
-                :load "/path/to/php-autoload.el"))
-      :eval (macroexpand
-             '(wiz php-mode
-                :load-if-exists "/path/to/php-autoload.el"))
-      :eval (macroexpand
-             '(wiz js
-                :setup-hook (lambda () (setopt js-indent-level 4))))
-      :eval (macroexpand
-             '(wiz elisp-mode
-                :hook-names (emacs-lisp-mode-hook)
-                :init (lambda () (emacs-lisp-mode 1))))
-      :eval (macroexpand
-             '(wiz elisp-mode
-                :hook-names (emacs-lisp-mode-hook lisp-interaction-mode-hook)
-                :setup-hook
-                (defun init-emacs-lisp-mode-setup ()
-                  (message "Nyan!")))))))
+(eval-when-compile
+  (require 'shortdoc))
+
+(define-short-documentation-group wiz
+  "Wiz for activate feature"
+  (wiz
+    :eval (macroexpand
+           '(wiz nyan-mode))
+    :eval (macroexpand
+           '(wiz php-mode
+              :load "/path/to/php-autoload.el"))
+    :eval (macroexpand
+           '(wiz php-mode
+              :load-if-exists "/path/to/php-autoload.el"))
+    :eval (macroexpand
+           '(wiz js
+              :setup-hook (lambda () (setopt js-indent-level 4))))
+    :eval (macroexpand
+           '(wiz elisp-mode
+              :hook-names (emacs-lisp-mode-hook)
+              :init (lambda () (emacs-lisp-mode 1))))
+    :eval (macroexpand
+           '(wiz elisp-mode
+              :hook-names (emacs-lisp-mode-hook lisp-interaction-mode-hook)
+              :setup-hook
+              (defun init-emacs-lisp-mode-setup ()
+                (message "Nyan!"))))))
 
 (provide 'wiz-shortdoc)
 ;;; wiz-shortdoc.el ends here

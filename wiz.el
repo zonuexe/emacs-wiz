@@ -31,6 +31,7 @@
 (eval-when-compile
   (require 'pcase)
   (require 'cl-lib))
+(require 'wiz-shortdoc)
 
 (defvar wiz--feature-name)
 (defvar wiz--hook-names)
