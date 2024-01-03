@@ -6,6 +6,10 @@ All notable changes of this package are documented in this file using the [Keep 
 
 ## Unreleased
 
+### Added
+
+* [wiz-key] Add `wiz-keys` for key binding settings.
+
 ### Changed
 
 * [wiz] Make the `:init` keyword's lambda always return NIL for optimization.

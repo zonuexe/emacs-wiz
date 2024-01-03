@@ -130,3 +130,49 @@ Optimize GUI Emacs startup overhead by importing environment variables during by
 ```
 
 </details>
+
+## wiz-key.el
+
+It's just a thin wrapper around `define-key`.
+
+```emacs-lisp
+(eval-when-compile (require 'wiz-key))
+
+(wiz-keys (("[" . (smartchr "[`!!']" "array(`!!')" "[[`!!']]"))
+           ("]" . (smartchr "array " "]" "]]"))
+           ("&" . (smartchr "&" "&& "))
+           ("\\" . (smartchr "\\" "\\PHPStan\\dumpType(`!!');" "\\\\"))
+           ("¥" . (smartchr "\\" "\\PHPStan\\dumpType(`!!');" "\\\\"))
+           ("|" . (smartchr "|" "|| " ))
+           ("." . (smartchr
+                   (my-php-smartchr-dot "->" "." ". ")
+                   (my-php-smartchr-dot ". " ".." "..")
+                   "..."))
+           ("^" . (smartchr "^" "fn() => " "function () {`!!'}"))
+           ("@" . (smartchr "@" "$this->"))
+           ("~" . (smartchr "~" "phpstan-"))
+           ("C-c C-c" . 'psysh-eval-region)
+           ("<f6>" . phpunit-current-project)
+           ("C-c C--" . php-current-class)
+           ("C-c C-=" . 'php-current-namespace))
+          :map php-mode-map)
+```
+
+### vs `bind-keys`
+
+`bind-keys` flexibly accepts multiple keymaps, while `wiz-keys` only binds to a single map.
+
+```emacs-lisp
+(bind-keys :map paredit-mode-map
+	       ("C-<right>" . right-word)
+	       ("C-<left>"  . left-word))
+
+(wiz-keys (("C-<right>" . right-word)
+           ("C-<left>"  . left-word))
+          :map paredit-mode-map)
+```
+
+ * Multiple keys must be grouped together in parentheses as a single alist.
+ * `:map` keyword must be written after alist.
+ * Other keywords are not implemented because I don't use them, not because of policy.
+   * If you want to use them please send Pull Requests.
