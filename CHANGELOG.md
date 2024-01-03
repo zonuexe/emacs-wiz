@@ -4,6 +4,12 @@ All notable changes of this package are documented in this file using the [Keep 
 
 [Keep a Changelog]: https://keepachangelog.com/
 
+## Unreleased
+
+### Changed
+
+* [wiz] Make the `:init` keyword's lambda always return NIL for optimization.
+
 ## [0.0.2]
 
 ### Added

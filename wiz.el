@@ -95,7 +95,7 @@
                    (list
                     (pcase expr
                       (`(lambda . (() . ,body))
-                       (cons 'progn body))
+                       (cons 'prog1 (cons nil body)))
                       (_ (error "%S is unexpected form" expr))))))))
 
 (defun wiz--assert-feature-spec (feature-name plist)
