@@ -1,4 +1,4 @@
-;;; wiz-pkg.el --- Package Manager integrations for wiz   -*- lexical-binding: t; -*-
+;;; wiz-pkgs.el --- Package Manager integrations for wiz  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  USAMI Kenta
 
@@ -31,8 +31,8 @@
 ;;
 ;; For example:
 ;;
-;;     (wiz-pkg 'package-el 'php-mode) ;; Install from any ELPA using package-install
-;;     (wiz-pkg 'nongnu 'php-mode) ;; Install from NonGNU ELPA using package-install
+;;     (wiz-pkgs 'package-el 'php-mode) ;; Install from any ELPA using package-install
+;;     (wiz-pkgs 'nongnu 'php-mode) ;; Install from NonGNU ELPA using package-install
 ;;
 ;; The handler should install the package immediately when called.
 ;; When called from the wiz macro, it installs the package when byte-compiling init.el,
@@ -49,61 +49,61 @@
 (require 'package)
 (require 'borg nil t)
 
-(defgroup wiz-pkg nil
+(defgroup wiz-pkgs nil
   "Package Manager integrations for wiz."
   :group 'wiz
   :group 'convenience)
 
-(defcustom wiz-pkg-default-type 'package-el
+(defcustom wiz-pkgs-default-type 'package-el
   "Symbol of default package type."
   :type 'symbol
   :group 'wiz-pkc)
 
-(defcustom wiz-pkg-enable-log nil
+(defcustom wiz-pkgs-enable-log nil
   "If non-NIL, log registerd packages."
   :type 'boolean
   :group 'wiz-pkg)
 
-(defvar wiz-pkg-handler-alist
-  '((package-el . wiz-pkg-package-el-handler)
-    (gnu . wiz-pkg-package-el-handler)
-    (nongnu . wiz-pkg-package-el-handler)
-    (gnu-devel . wiz-pkg-package-el-handler)
-    (nongnu-devel . wiz-pkg-package-el-handler)
-    ;; (borg . wiz-pkg-borg-handler)
-    ;; (straight . wiz-pkg-straight-handler)
-    ;; (el-get . wiz-pkg-el-get-handler)
-    (melpa . wiz-pkg-package-el-handler)
-    (melpa-stable . wiz-pkg-package-el-handler)))
+(defvar wiz-pkgs-handler-alist
+  '((package-el . wiz-pkgs-package-el-handler)
+    (gnu . wiz-pkgs-package-el-handler)
+    (nongnu . wiz-pkgs-package-el-handler)
+    (gnu-devel . wiz-pkgs-package-el-handler)
+    (nongnu-devel . wiz-pkgs-package-el-handler)
+    ;; (borg . wiz-pkgs-borg-handler)
+    ;; (straight . wiz-pkgs-straight-handler)
+    ;; (el-get . wiz-pkgs-el-get-handler)
+    (melpa . wiz-pkgs-package-el-handler)
+    (melpa-stable . wiz-pkgs-package-el-handler)))
 
-(defvar wiz-pkg--registerd-packages nil)
+(defvar wiz-pkgs--registerd-packages nil)
 
-(defun wiz-pkg--ensure-string (value)
+(defun wiz-pkgs--ensure-string (value)
   "Return a string from VALUE."
   (cond
    ((stringp value) value)
    ((symbolp value) (symbol-name value))
    ((error "Unexpected value %s" value))))
 
-(defun wiz-pkg--ensure-symbol (value)
+(defun wiz-pkgs--ensure-symbol (value)
   "Return a symbol from VALUE."
   (cond
    ((symbolp value) value)
    ((stringp value) (intern value))
    ((error "Unexpected value %s" value))))
 
-(defun wiz-pkg-package-el-handler (type package &optional _params)
+(defun wiz-pkgs-package-el-handler (type package &optional _params)
   "Install PACKAGE with TYPE and PARAMS using `package-install'."
   (let ((pin-archive (if (eq type 'package-el) nil type)))
     (append
      (when pin-archive
        (list
-        (let* ((pair `(cons (quote ,package) ,(wiz-pkg--ensure-string pin-archive)))
+        (let* ((pair `(cons (quote ,package) ,(wiz-pkgs--ensure-string pin-archive)))
                (pin `(unless (member ,pair package-pinned-packages)
                        (setopt package-pinned-packages
                                (cons ,pair package-pinned-packages))))
-               (log (when wiz-pkg-enable-log
-                      `(push ,pair (alist-get 'package-el wiz-pkg--registerd-packages))))
+               (log (when wiz-pkgs-enable-log
+                      `(push ,pair (alist-get 'package-el wiz-pkgs--registerd-packages))))
                (sexp (macroexp-progn (list pin log))))
           (prog1 sexp
             (eval sexp)))))
@@ -114,13 +114,13 @@
            (package-read-all-archive-contents))
          (package-install package))))))
 
-(defun wiz-pkg (type package &optional params)
+(defun wiz-pkgs (type package &optional params)
   "Install PACKAGE with TYPE and PARAMS."
-  (let* ((type (wiz-pkg--ensure-symbol type))
-         (handler (cdr-safe (assq type wiz-pkg-handler-alist))))
+  (let* ((type (wiz-pkgs--ensure-symbol type))
+         (handler (cdr-safe (assq type wiz-pkgs-handler-alist))))
     (message "handler: %S" handler)
     (macroexp-progn
      (funcall handler type package params))))
 
-(provide 'wiz-pkg)
-;;; wiz-pkg.el ends here
+(provide 'wiz-pkgs)
+;;; wiz-pkgs.el ends here

@@ -181,7 +181,7 @@ It's just a thin wrapper around `define-key`.
  * Other keywords are not implemented because I don't use them, not because of policy.
    * If you want to use them please send Pull Requests.
 
-## wiz-pkg.el
+## wiz-pkgs.el
 
 This feature provides a typical workflow for installing a package if it is not installed.
 
@@ -190,13 +190,13 @@ It is designed for wiz's `:package` keyword, but can also be used as a standalon
 For example:
 
 ```emacs-lisp
-(wiz-pkg 'package-el 'php-mode) ;; Install from any ELPA using package-install
-(wiz-pkg 'nongnu 'php-mode)     ;; Install from NonGNU ELPA using package-install
+(wiz-pkgs 'package-el 'php-mode) ;; Install from any ELPA using package-install
+(wiz-pkgs 'nongnu 'php-mode)     ;; Install from NonGNU ELPA using package-install
 ```
 
 The handler should install the package immediately when called.
 
-When called from the wiz macro, it installs the package when byte-compiling init.el, so it does nothing at runtime.  Instead, the handler should return an S-expression that is evaluated at runtime.  If it does nothing at runtime, it simply returns `nil`.
+When called from the wiz macro, it installs the package when byte-compiling `init.el`, so it does nothing at runtime.  Instead, the handler should return an S-expression that is evaluated at runtime.  If it does nothing at runtime, it simply returns `nil`.
 
 > [!NOTE]
 > Handlers other than package.el are not implemented.

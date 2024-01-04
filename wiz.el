@@ -32,7 +32,7 @@
   (require 'pcase)
   (require 'macroexp)
   (require 'cl-lib))
-(require 'wiz-pkg)
+(require 'wiz-pkgs)
 (require 'wiz-shortdoc)
 
 (defvar wiz--feature-name)
@@ -48,10 +48,10 @@
      :transform ,(lambda (expr)
                    (macroexp-unprogn
                     (pcase expr
-                      (`(,type . (,package . ,rest)) (wiz-pkg type package rest))
-                      ((pred stringp) (wiz-pkg wiz-pkg-default-type expr))
+                      (`(,type . (,package . ,rest)) (wiz-pkgs type package rest))
+                      ((pred stringp) (wiz-pkgs wiz-pkgs-default-type expr))
                       (_ (if (eq expr t)
-                             (wiz-pkg wiz-pkg-type-archive wiz--feature-name)
+                             (wiz-pkgs wiz-pkgs-default-type wiz--feature-name)
                            (error "Unexpected form: %S" expr)))))))
     (:load-if-exists
      :transform (lambda (v)
