@@ -30,14 +30,30 @@
 ;;; Code:
 (eval-when-compile
   (require 'pcase)
+  (require 'macroexp)
   (require 'cl-lib))
+(require 'wiz-pkg)
 (require 'wiz-shortdoc)
 
 (defvar wiz--feature-name)
 (defvar wiz--hook-names)
 
+(defgroup wiz nil
+  "Macros to simplify startup initialization."
+  :group 'convenience)
+
 (defvar wiz-keywords
-  `((:load-if-exists
+  `((:package
+     :assert-before ,(lambda (v))
+     :transform ,(lambda (expr)
+                   (macroexp-unprogn
+                    (pcase expr
+                      (`(,type . (,package . ,rest)) (wiz-pkg type package rest))
+                      ((pred stringp) (wiz-pkg wiz-pkg-default-type expr))
+                      (_ (if (eq expr t)
+                             (wiz-pkg wiz-pkg-type-archive wiz--feature-name)
+                           (error "Unexpected form: %S" expr)))))))
+    (:load-if-exists
      :transform (lambda (v)
                   (let ((file (eval v)))
                     (list
