@@ -36,11 +36,6 @@
 (defvar wiz--feature-name)
 (defvar wiz--hook-names)
 
-(defcustom wiz-feature-hook-name-template "init-%s-setup"
-  "Template for setup function name."
-  :type 'string
-  :group 'wiz)
-
 (defvar wiz-keywords
   `((:load-if-exists
      :transform (lambda (v)
