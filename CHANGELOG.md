@@ -4,6 +4,12 @@ All notable changes of this package are documented in this file using the [Keep 
 
 [Keep a Changelog]: https://keepachangelog.com/
 
+## Unreleased
+
+### Added
+
+* [wiz] Add `wiz-pkg` macro for direct use.
+
 ## [0.0.4]
 
 ### Added

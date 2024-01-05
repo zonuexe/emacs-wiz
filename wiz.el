@@ -155,5 +155,12 @@ This macro helps with expression expansion at compile time."
     `(prog1 (quote ,sequence)
        ,@(mapcar function sequence))))
 
+(defmacro wiz-pkg (&rest form)
+  "Install package FORM."
+  (pcase form
+    (`(,type . (,package . ,rest)) (wiz-pkgs type package rest))
+    (`(,package) (wiz-pkgs wiz-pkgs-default-type package))
+    (_ (error "Unexpected form: %S" form))))
+
 (provide 'wiz)
 ;;; wiz.el ends here
