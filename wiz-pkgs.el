@@ -4,7 +4,7 @@
 
 ;; Author: USAMI Kenta <tadsan@zonu.me>
 ;; Created: 01 Jan 2024
-;; Version: 0.0.3
+;; Version: 0.0.4
 ;; Keywords: convenience, lisp
 ;; Homepage: https://github.com/zonuexe/emacs-wiz
 ;; Package-Requires: ((emacs "29.1"))

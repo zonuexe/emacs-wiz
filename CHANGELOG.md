@@ -4,11 +4,11 @@ All notable changes of this package are documented in this file using the [Keep 
 
 [Keep a Changelog]: https://keepachangelog.com/
 
-## Unreleased
+## [0.0.4]
 
 ### Added
 
-* [wiz-pkg] Add `wiz-pkgs` function for package installation.
+* [wiz-pkgs] Add `wiz-pkgs` function for package installation.
 * [wiz] Add `wiz-map` macro to help expression expansion at compile time.
 
 ## [0.0.3]
