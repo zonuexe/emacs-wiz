@@ -118,7 +118,6 @@
   "Install PACKAGE with TYPE and PARAMS."
   (let* ((type (wiz-pkgs--ensure-symbol type))
          (handler (cdr-safe (assq type wiz-pkgs-handler-alist))))
-    (message "handler: %S" handler)
     (macroexp-progn
      (funcall handler type package params))))
 
