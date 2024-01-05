@@ -147,5 +147,13 @@
     (user-error "Wiz: feature `%s' is not a available feature name" feature-name))
   (cons 'prog1 (cons (list 'quote feature-name) (wiz--feature-process feature-name plist))))
 
+(defmacro wiz-map (list function)
+  "Apply FUNCTION to each element of LIST.
+This macro helps with expression expansion at compile time."
+  (declare (debug (form body)) (indent 1))
+  (let ((sequence (eval list)))
+    `(prog1 (quote ,sequence)
+       ,@(mapcar function sequence))))
+
 (provide 'wiz)
 ;;; wiz.el ends here

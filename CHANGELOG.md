@@ -8,7 +8,8 @@ All notable changes of this package are documented in this file using the [Keep 
 
 ### Added
 
-* [wiz-pkg] Add `wiz-pkg` function for package installation.
+* [wiz-pkg] Add `wiz-pkgs` function for package installation.
+* [wiz] Add `wiz-map` macro to help expression expansion at compile time.
 
 ## [0.0.3]
 

@@ -106,6 +106,24 @@ This package provides macros with a similar purpose to both, but wiz is much sim
    * In other words, write `:keyword` and `value` alternately.
  * The output code has no runtime library function calls.
 
+### Tips
+
+If the elements of the variable do not change dynamically, you can rewrite the code as follows and the code will be evaluated at compile time and further optimized by the byte compiler.
+
+```emacs-lisp
+;; Evaluated at runtime
+(mapc (lambda (it)
+        (add-hook (intern (concat (symbol-name it) "-hook"))
+                  #'my/disable-trailing-mode-hook))
+      my/disable-trailing-modes)
+
+;; Evaluated at compile time and even more optimizer friendly
+(wiz-map my/disable-trailing-modes
+  (lambda (it)
+    `(add-hook (quote ,(intern (concat (symbol-name it) "-hook")))
+               #'my/disable-trailing-mode-hook)))
+```
+
 ## wiz-env.el
 
 Optimize GUI Emacs startup overhead by importing environment variables during byte compilation.
