@@ -145,7 +145,7 @@
 (defmacro wiz (feature-name &rest form)
   "Wiz for activate FEATURE-NAME with FORM."
   (declare (indent defun))
-  (let ((alist (wiz--form-to-alist (mapcar #'car wiz-keywords) form)))
+  (let ((alist (if (null form) nil (wiz--form-to-alist (mapcar #'car wiz-keywords) form))))
     (wiz--assert-feature-spec feature-name alist)
     (unless (require feature-name nil t)
       (user-error "Wiz: feature `%s' is not a available feature name" feature-name))
