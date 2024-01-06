@@ -50,9 +50,11 @@
                     (pcase expr
                       (`(,type . (,package . ,rest)) (wiz-pkgs type package rest))
                       ((pred stringp) (wiz-pkgs wiz-pkgs-default-type expr))
-                      (_ (if (eq expr t)
-                             (wiz-pkgs wiz-pkgs-default-type wiz--feature-name)
-                           (error "Unexpected form: %S" expr)))))))
+                      (_ (if (not (eq expr t))
+                             (error "Unexpected form: %S" expr)
+                           (wiz-pkgs wiz-pkgs-default-type wiz--feature-name)
+                           (unless (require wiz--feature-name nil t)
+                             (user-error "Wiz: feature `%s' is not a available feature name" wiz--feature-name))))))))
     (:load-if-exists
      :transform (lambda (v)
                   (let ((file (eval v)))
@@ -145,9 +147,10 @@
 (defmacro wiz (feature-name &rest form)
   "Wiz for activate FEATURE-NAME with FORM."
   (declare (indent defun))
-  (let ((alist (if (null form) nil (wiz--form-to-alist (mapcar #'car wiz-keywords) form))))
+  (let* ((alist (if (null form) nil (wiz--form-to-alist (mapcar #'car wiz-keywords) form)))
+         (delay-require (assq :package alist)))
     (wiz--assert-feature-spec feature-name alist)
-    (unless (require feature-name nil t)
+    (unless (or delay-require (require feature-name nil t))
       (user-error "Wiz: feature `%s' is not a available feature name" feature-name))
     (cons 'prog1 (cons (list 'quote feature-name) (wiz--feature-process feature-name alist)))))
 
