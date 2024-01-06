@@ -44,7 +44,7 @@
 
 (defvar wiz-keywords
   `((:package
-     :assert-before ,(lambda (v))
+     :assert-before wiz-kwd-package-assert-before
      :transform ,(lambda (expr)
                    (macroexp-unprogn
                     (pcase expr
@@ -66,17 +66,8 @@
                      (unless (stringp (nth 1 (car v)))
                        (error "(:load file): `file' must be evalute as string %S" (car v)))))
     (:config
-     :assert-before (lambda (v)
-                      (unless (and (listp v) (eq 'lambda (car v)))
-                        (error "(config :proc) `proc' must be lambda expression")))
-     :transform ,(lambda (expr)
-                   (list
-                    (pcase expr
-                      (`(lambda . (() . ,body))
-                       (cons 'with-eval-after-load
-                             (cons (list 'quote wiz--feature-name)
-                                   body)))
-                      (_ (error "%S is unexpected form" expr))))) )
+     :accept-multiple t
+     :transform wiz-kwd-config-transform)
     (:hook-names
      :assert-before (lambda (names)
                       (unless (and (listp names) (cl-every #'symbolp names))
@@ -102,50 +93,63 @@
                                  target-hook-names)
                        ,expr))))
     (:init
-     :transform ,(lambda (expr)
-                   (list
-                    (pcase expr
-                      (`(lambda . (() . ,body))
-                       (cons 'prog1 (cons nil body)))
-                      (_ (error "%S is unexpected form" expr))))))))
+     :accept-multiple t
+     :transform wiz-kwd-init-transform)))
 
-(defun wiz--assert-feature-spec (feature-name plist)
-  "Assert wiz FEATURE-NAME feature spec PLIST."
+(defun wiz--assert-feature-spec (feature-name alist)
+  "Assert wiz FEATURE-NAME feature spec ALIST."
   (cl-check-type feature-name symbol)
-  (cl-loop for (key _value) on plist by #'cddr
+  (cl-loop for (key . _value) in alist
            for spec = (cdr-safe (assq key wiz-keywords))
            unless spec
            do (error "`%s' is unexpected keyword for wiz" key)))
 
-(defun wiz--feature-process-1 (feature-name plist keyword spec)
-  "Process wiz FEATURE-NAME feature SPEC for PLIST of KEYWORD."
+(defun wiz--feature-process-1 (feature-name alist keyword spec)
+  "Process wiz FEATURE-NAME feature SPEC for ALIST of KEYWORD."
   (cl-check-type feature-name symbol)
-  (when-let (value (plist-get plist keyword))
+  (when-let (value (cdr-safe (assq keyword alist)))
     (let ((assert-before (or (plist-get spec :assert-before) #'always))
           (transform (plist-get spec :transform))
           (assert-after (or (plist-get spec :assert-after) #'always))
           transformed)
+      (unless (plist-get spec :accept-multiple)
+        (if (eq 1 (length value))
+            (cl-callf car value)
+          (error "%s expected only one argument %S" keyword value)))
       (funcall assert-before value)
       (setq transformed (funcall transform value))
       (funcall assert-after transformed)
       transformed)))
 
-(defun wiz--feature-process (feature-name plist)
-  "Process wiz FEATURE-NAME spec by PLIST."
+(defun wiz--feature-process (feature-name alist)
+  "Process wiz FEATURE-NAME spec by ALIST."
   (let ((wiz--feature-name feature-name)
         wiz--hook-names)
     (cl-loop for (keyword . spec) in wiz-keywords
-             for transformed = (wiz--feature-process-1 feature-name plist keyword spec)
+             for transformed = (wiz--feature-process-1 feature-name alist keyword spec)
              if transformed
              append transformed)))
 
-(defmacro wiz (feature-name &rest plist)
-  "Wiz for activate FEATURE-NAME with PLIST."
+(defun wiz--form-to-alist (keywords form)
+  "Convert plist-like FORM to alist by KEYWORDS."
+  (let ((keyword (car form))
+        (alist (mapcar (lambda (kwd) (list kwd)) keywords)))
+    (unless (keywordp keyword)
+      (error "First clause of wiz form must be :keyword in %S" keywords))
+    (dolist (element form)
+      (if (memq element keywords)
+          (setq keyword element)
+        (push element (alist-get keyword alist))))
+    alist))
+
+(defmacro wiz (feature-name &rest form)
+  "Wiz for activate FEATURE-NAME with FORM."
   (declare (indent defun))
-  (wiz--assert-feature-spec feature-name plist)
-  (unless (require feature-name nil t)
-    (user-error "Wiz: feature `%s' is not a available feature name" feature-name))
-  (cons 'prog1 (cons (list 'quote feature-name) (wiz--feature-process feature-name plist))))
+  (let ((alist (wiz--form-to-alist (mapcar #'car wiz-keywords) form)))
+    (wiz--assert-feature-spec feature-name alist)
+    (unless (require feature-name nil t)
+      (user-error "Wiz: feature `%s' is not a available feature name" feature-name))
+    (cons 'prog1 (cons (list 'quote feature-name) (wiz--feature-process feature-name alist)))))
 
 (defmacro wiz-map (list function)
   "Apply FUNCTION to each element of LIST.

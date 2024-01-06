@@ -10,6 +10,10 @@ All notable changes of this package are documented in this file using the [Keep 
 
 * [wiz] Add `wiz-pkg` macro for direct use.
 
+### Changed
+
+* [wiz] `:init` and `:config` now accept multiple lines without needing to be enclosed in `lambda`.
+
 ## [0.0.4]
 
 ### Added

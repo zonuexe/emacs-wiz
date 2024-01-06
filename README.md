@@ -28,21 +28,18 @@ Shorthand macro for feature configuration for `init.el`. These are expanded to t
 
 (wiz nyan-mode
   :config
-  (lambda ()
-    (setopt nyan-bar-length 16))
+  (setopt nyan-bar-length 16)
   :init
-  (lambda ()
-    (nyan-mode)))
+  (nyan-mode))
 ```
 
 This expression is expanded into the following S-expression:
 
 ```emacs-lisp
 (prog1 'nyan-mode
-  (eval-after-load 'nyan-mode
-    (lambda nil
-      (setopt nyan-bar-length 16)))
-  (progn
+  (with-eval-after-load 'nyan-mode
+    (setopt nyan-bar-length 16))
+  (prog1 nil
     (nyan-mode)))
 ```
 
@@ -102,8 +99,8 @@ This expression is expanded into the following S-expression:
 This package provides macros with a similar purpose to both, but wiz is much simpler.
 
  * The name specified for `wiz` is only the **feature** name, ***not the package name***.
- * Must be set strictly as a property list.
-   * In other words, write `:keyword` and `value` alternately.
+ * ~~Must be set strictly as a property list.~~
+   * `:config` and `:init` can now be written on multiple lines without needing to be enclosed in `lambda` like use-package.
  * The output code has no runtime library function calls.
 
 ### Tips
@@ -142,7 +139,7 @@ Optimize GUI Emacs startup overhead by importing environment variables during by
 ```emacs-lisp
 (unless window-system
   (prog1
-      (list "PATH" "TEST_SERVER" "SSH_AUTH_SOCK" "SSH_AGENT_PID" "MANPATH" "GOROOT" "GOPATH")
+      (list "PATH" "SSH_AUTH_SOCK" "SSH_AGENT_PID" "MANPATH" "GOROOT" "GOPATH")
     (setenv "PATH" "/opt/homebrew/bin:/opt/homebrew/sbin:/Users/megurine/local/bin:/usr/bin:/bin:/usr/sbin:/sbin")
     (setq exec-path
           (list "/opt/homebrew/bin/" "/opt/homebrew/sbin/" "/Users/megurine/local/bin/" "/usr/bin/" "/bin/" "/usr/sbin/" "/sbin/" exec-directory))
