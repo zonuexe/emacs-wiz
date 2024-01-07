@@ -32,9 +32,11 @@
   (require 'pcase)
   (require 'macroexp)
   (require 'cl-lib))
+(require 'wiz-kwd)
 (require 'wiz-pkgs)
 (require 'wiz-shortdoc)
 
+(defvar wiz--disabled)
 (defvar wiz--feature-name)
 (defvar wiz--hook-names)
 
@@ -45,55 +47,20 @@
 (defvar wiz-keywords
   `((:package
      :assert-before wiz-kwd-package-assert-before
-     :transform ,(lambda (expr)
-                   (macroexp-unprogn
-                    (pcase expr
-                      (`(,type . (,package . ,rest)) (wiz-pkgs type package rest))
-                      ((pred stringp) (wiz-pkgs wiz-pkgs-default-type expr))
-                      (_ (if (not (eq expr t))
-                             (error "Unexpected form: %S" expr)
-                           (wiz-pkgs wiz-pkgs-default-type wiz--feature-name)
-                           (unless (require wiz--feature-name nil t)
-                             (user-error "Wiz: feature `%s' is not a available feature name" wiz--feature-name))))))))
+     :transform wiz-kwd-package-transform)
     (:load-if-exists
-     :transform (lambda (v)
-                  (let ((file (eval v)))
-                    (list
-                     `(when (file-exists-p ,file) (load ,file))))))
+     :transform wiz-kwd-load-if-exists-transform)
     (:load
-     :transform (lambda (expr)
-                  (list
-                   (list 'load (eval expr))))
-     :assert-after (lambda (v)
-                     (unless (stringp (nth 1 (car v)))
-                       (error "(:load file): `file' must be evalute as string %S" (car v)))))
+     :transform wiz-kwd-load-transform
+     :assert-after wiz-kwd-load-assert-after)
     (:config
      :accept-multiple t
      :transform wiz-kwd-config-transform)
     (:hook-names
-     :assert-before (lambda (names)
-                      (unless (and (listp names) (cl-every #'symbolp names))
-                        (error "(:hook-names %S): `names' must be list of symbols" names))
-                      (unless (cl-every #'boundp names)
-                        (error "(:hook-names %S): `names' must be existing hook name" names)))
-     :transform (lambda (names)
-                  (prog1 nil
-                    (setq wiz--hook-names names))))
+     :assert-before wiz-kwd-hook-names-assert-before
+     :transform wiz-kwd-hook-names-transform)
     (:setup-hook
-     :transform ,(lambda (expr)
-                   (let ((setup-hook-name (nth 1 expr))
-                         (target-hook-names
-                          (or wiz--hook-names
-                              (let ((name (symbol-name wiz--feature-name)))
-                                (list (intern (format "%s-hook"
-                                                      (if (string-match-p "-mode" name)
-                                                          name
-                                                        (concat name "-mode")))))))))
-                     `(,@(mapcar (lambda (target-hook-name)
-                                   `(add-hook ,(list 'quote target-hook-name)
-                                              ,(list 'function setup-hook-name)))
-                                 target-hook-names)
-                       ,expr))))
+     :transform wiz-kwd-setup-hook-transform)
     (:init
      :accept-multiple t
      :transform wiz-kwd-init-transform)))
@@ -126,9 +93,11 @@
 (defun wiz--feature-process (feature-name alist)
   "Process wiz FEATURE-NAME spec by ALIST."
   (let ((wiz--feature-name feature-name)
+        wiz--disabled
         wiz--hook-names)
     (cl-loop for (keyword . spec) in wiz-keywords
-             for transformed = (wiz--feature-process-1 feature-name alist keyword spec)
+             for transformed = (unless wiz--disabled
+                                 (wiz--feature-process-1 feature-name alist keyword spec))
              if transformed
              append transformed)))
 
@@ -148,7 +117,7 @@
   "Wiz for activate FEATURE-NAME with FORM."
   (declare (indent defun))
   (let* ((alist (if (null form) nil (wiz--form-to-alist (mapcar #'car wiz-keywords) form)))
-         (delay-require (assq :package alist)))
+         (delay-require (cl-union '(:load :load-if-exists :package) (mapcar #'car alist))))
     (wiz--assert-feature-spec feature-name alist)
     (unless (or delay-require (require feature-name nil t))
       (user-error "Wiz: feature `%s' is not a available feature name" feature-name))

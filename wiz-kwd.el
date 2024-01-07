@@ -29,8 +29,11 @@
 
 ;;; Code:
 (require 'pcase)
+(require 'wiz-pkgs)
 (eval-when-compile
-  (defvar wiz--feature-name))
+  (defvar wiz--disabled)
+  (defvar wiz--feature-name)
+  (defvar wiz--hook-names))
 
 ;; Utilities
 (defun wiz-kwd--parse-form (keyword form)
@@ -51,12 +54,74 @@
   (unless (or (stringp expr) (symbolp expr) (eq expr t) (listp expr))
     (error "(:package form): `form' is invalid")))
 
+(defun wiz-kwd-package-transform (expr)
+  "Transform EXPR for wiz :package keyword."
+  (macroexp-unprogn
+   (pcase expr
+     (`(,type . (,package . ,rest)) (wiz-pkgs type package rest))
+     ((pred stringp) (wiz-pkgs wiz-pkgs-default-type expr))
+     (_ (if (not (eq expr t))
+            (error "Unexpected form: %S" expr)
+          (wiz-pkgs wiz-pkgs-default-type wiz--feature-name)
+          (unless (require wiz--feature-name nil t)
+            (user-error "Wiz: feature `%s' is not a available feature name" wiz--feature-name)))))))
+
+(defun wiz-kwd-load-if-exists-transform (expr)
+  "Transform EXPR for wiz :load-if-exists keyword."
+  (let* ((file (eval expr))
+         (sexp `(when (file-exists-p ,file) (load ,file))))
+    (prog1 (list sexp)
+      (when (eval sexp)
+        (unless (require wiz--feature-name nil t)
+          (user-error "Wiz: feature %s is not a available feature name" wiz--feature-name))))))
+
+(defun wiz-kwd-load-transform (expr)
+  "Transform EXPR for wiz :load keyword."
+  (let ((sexp `(load ,(eval expr))))
+    (prog1 (list sexp)
+      (when (eval sexp)
+        (unless (require wiz--feature-name nil t)
+          (user-error "Wiz: feature %s is not a available feature name" wiz--feature-name))))))
+
+(defun wiz-kwd-load-assert-after (exprs)
+  "Assert EXPRS postcondition for wiz :load keyword."
+  (unless (stringp (nth 1 (car exprs)))
+    (error "(:load file): `file' must be evalute as string %S" (car v))))
+
 (defun wiz-kwd-config-transform (form)
   "Transform FORM for wiz :config keyword."
   (list
    (cons 'with-eval-after-load
          (cons (list 'quote wiz--feature-name)
                (wiz-kwd--parse-form :config form)))))
+
+(defun wiz-kwd-hook-names-assert-before (names)
+  "Assert NAMES precondition for wiz :hook-names keyword."
+  (unless (and (listp names) (cl-every #'symbolp names))
+    (error "(:hook-names %S): `names' must be list of symbols" names))
+  (unless (cl-every #'boundp names)
+    (error "(:hook-names %S): `names' must be existing hook name" names)))
+
+(defun wiz-kwd-hook-names-transform (names)
+  "Transform NAMES for wiz :hook-names keyword."
+  (prog1 nil
+    (setq wiz--hook-names names)))
+
+(defun wiz-kwd-setup-hook-transform (expr)
+  "Transform EXPR form wiz :setup-hook keyword."
+  (let ((setup-hook-name (nth 1 expr))
+        (target-hook-names
+         (or wiz--hook-names
+             (let ((name (symbol-name wiz--feature-name)))
+               (list (intern (format "%s-hook"
+                                     (if (string-match-p "-mode" name)
+                                         name
+                                       (concat name "-mode")))))))))
+    `(,@(mapcar (lambda (target-hook-name)
+                  `(add-hook ,(list 'quote target-hook-name)
+                             ,(list 'function setup-hook-name)))
+                target-hook-names)
+      ,expr)))
 
 (defun wiz-kwd-init-transform (form)
   "Transform FORM for wiz :init keyword."

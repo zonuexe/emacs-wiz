@@ -13,7 +13,7 @@ All notable changes of this package are documented in this file using the [Keep 
 ### Changed
 
 * [wiz] `:init` and `:config` now accept multiple lines without needing to be enclosed in `lambda`.
-* [wiz] Make delayed require when use `:package` keyword
+* [wiz] Make delayed require when use `:package`, `:load` and `:load-if-exists` keyword.
 
 ## [0.0.4]
 
