@@ -4,7 +4,9 @@ All notable changes of this package are documented in this file using the [Keep 
 
 [Keep a Changelog]: https://keepachangelog.com/
 
-## Unreleased
+<!-- ## Unreleased -->
+
+## [0.0.5]
 
 ### Added
 
@@ -14,6 +16,11 @@ All notable changes of this package are documented in this file using the [Keep 
 
 * [wiz] `:init` and `:config` now accept multiple lines without needing to be enclosed in `lambda`.
 * [wiz] Make delayed require when use `:package`, `:load` and `:load-if-exists` keyword.
+
+### Fixed
+
+* [wiz] Fixed the list returned by `wiz--form-to-alist` being reversed.
+* [wiz-kwd] Fixed runtime error due to undefined variable.
 
 ## [0.0.4]
 
