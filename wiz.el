@@ -111,7 +111,7 @@
       (if (memq element keywords)
           (setq keyword element)
         (push element (alist-get keyword alist))))
-    alist))
+    (mapcar (lambda (elt) (cons (car elt) (nreverse (cdr elt)))) alist)))
 
 (defmacro wiz (feature-name &rest form)
   "Wiz for activate FEATURE-NAME with FORM."
