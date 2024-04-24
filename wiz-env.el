@@ -25,7 +25,8 @@
 
 ;;; Commentary:
 
-;; Optimize GUI Emacs startup overhead by importing environment variables during byte compilation.
+;; Optimize GUI Emacs startup overhead by importing environment variables during
+;; byte compilation.
 
 ;;; Code:
 (eval-when-compile
