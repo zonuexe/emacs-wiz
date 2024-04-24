@@ -7,7 +7,6 @@
 ;; Version: 0.0.4
 ;; Keywords: convenience, lisp
 ;; Homepage: https://github.com/zonuexe/emacs-wiz
-;; Package-Requires: ((emacs "29.1"))
 ;; License: GPL-3.0-or-later
 
 ;; This program is free software; you can redistribute it and/or modify
