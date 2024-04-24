@@ -86,7 +86,7 @@
 (defun wiz-kwd-load-assert-after (exprs)
   "Assert EXPRS postcondition for wiz :load keyword."
   (unless (stringp (nth 1 (car exprs)))
-    (error "(:load file): `file' must be evalute as string %S" (car v))))
+    (error "(:load file): `file' must be evalute as string %S" (car exprs))))
 
 (defun wiz-kwd-config-transform (form)
   "Transform FORM for wiz :config keyword."
