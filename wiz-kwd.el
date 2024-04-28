@@ -43,9 +43,6 @@
      ((not (eq 1 (length form))) (error "(%S form): Accept only one argument %S" keyword form))
      ((pcase-let ((`(lambda . (() . ,body)) (car form))) body))
      ((error "(%S form): %S i unexpected form" keyword form)))))
-
-;; (wiz-kwd--parse-form :hoge '((lambda () 'foo 'bar)))
-;; (wiz-kwd--parse-form :hoge '('foo 'bar))
 
 ;; Keywords
 (defun wiz-kwd-package-assert-before (expr)
