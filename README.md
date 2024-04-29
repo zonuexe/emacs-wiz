@@ -1,8 +1,8 @@
-# wiz for starting Emacs
+# 🧙 wiz for starting Emacs
 
 A collection of macros that optimize startup performance by byte-compiling `init.el`.
 
-## Installation
+## 💾 Installation
 
 This package requires Emacs 29.1+.
 
@@ -53,16 +53,14 @@ This expression is expanded into the following S-expression:
 (wiz php-mode
   :load-if-exists "~/repo/emacs/php-mode/lisp/php-mode-autoloads.el"
   :init
-  (lambda ()
-    (add-to-list 'auto-mode-alist '("\\.stub" . php-mode-maybe)))
+  (add-to-list 'auto-mode-alist '("\\.stub" . php-mode-maybe))
   :config
-  (lambda ()
-    (setopt php-default-major-mode 'php-mode)
-    (setopt php-manual-url 'ja)
-    (setopt php-mode-coding-style 'psr2)
-    (setopt php-mode-template-compatibility nil)
-    (setopt php-imenu-generic-expression 'php-imenu-generic-expression-simple)
-    (setopt php-project-auto-detect-etags-file t))
+  (setopt php-default-major-mode 'php-mode)
+  (setopt php-manual-url 'ja)
+  (setopt php-mode-coding-style 'psr2)
+  (setopt php-mode-template-compatibility nil)
+  (setopt php-imenu-generic-expression 'php-imenu-generic-expression-simple)
+  (setopt php-project-auto-detect-etags-file t)
   :setup-hook
   (defun init-php-mode-setup ()
     (subword-mode 1)
@@ -181,20 +179,24 @@ It's just a thin wrapper around `define-key`.
 
 `bind-keys` flexibly accepts multiple keymaps, while `wiz-keys` only binds to a single map.
 
-```emacs-lisp
-(bind-keys :map paredit-mode-map
-	       ("C-<right>" . right-word)
-	       ("C-<left>"  . left-word))
+```diff
+-(bind-keys :map paredit-mode-map
+-	       ("C-<right>" . right-word)
+-	       ("C-<left>"  . left-word))
 
-(wiz-keys (("C-<right>" . right-word)
-           ("C-<left>"  . left-word))
-          :map paredit-mode-map)
+ (wiz-keys (("C-<right>" . right-word)
+            ("C-<left>"  . left-word))
+           :map paredit-mode-map)
 ```
 
  * Multiple keys must be grouped together in parentheses as a single alist.
  * `:map` keyword must be written after alist.
  * Other keywords are not implemented because I don't use them, not because of policy.
    * If you want to use them please send Pull Requests.
+
+### Where should I write `wiz-keys`, in `:init` or `:config`?
+
+If you are specifying `:map` for `wiz-keys`, it should be added in the `:config` section of the feature where that map is defined. If you are not specifying a `:map` (i.e., setting it to `global-map`), it is recommended to add it in the `:init` section.
 
 ## wiz-pkgs.el
 
