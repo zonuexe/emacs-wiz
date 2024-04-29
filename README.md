@@ -87,10 +87,15 @@ This expression is expanded into the following S-expression:
    * `:package t`: If the feature name and package name are the same, just pass `t`.
  * `:load-if-exists string`
  * `:load string`
- * `:init function`
- * `:config function`
- * `:hook-names (list symbol)`
- * `:setup-hook function`
+ * `:init ...exprs`
+ * `:config ...exprs`
+ * `:hook-names (repeat symbol)`
+ * `:setup-hook (defun ...)`
+
+> [!NOTE]
+> `...exprs` can contain multiple S-expressions. If you write a single `(lambda () ...)` there, its contents will be expanded.
+>
+> Include one function definition in `(defun ...)`. wiz reads the function name from defun and transparently adds it to the hook.
 
 ### vs use-package, leaf
 
@@ -218,3 +223,22 @@ When called from the wiz macro, it installs the package when byte-compiling `ini
 > [!NOTE]
 > Handlers other than package.el are not implemented.
 > I'm not a strait user, so if anyone wants to use it, please send me Pull Request.
+
+## Copyright
+
+This package is released under GPL-3.0.  See [`LICENSE`](LICENSE) file.
+
+> Copyright (C) 2024  USAMI Kenta
+>
+> This program is free software; you can redistribute it and/or modify
+> it under the terms of the GNU General Public License as published by
+> the Free Software Foundation, either version 3 of the License, or
+> (at your option) any later version.
+>
+> This program is distributed in the hope that it will be useful,
+> but WITHOUT ANY WARRANTY; without even the implied warranty of
+> MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> GNU General Public License for more details.
+>
+> You should have received a copy of the GNU General Public License
+> along with this program.  If not, see <https://www.gnu.org/licenses/>.
