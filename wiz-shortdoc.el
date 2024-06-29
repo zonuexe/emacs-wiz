@@ -37,7 +37,7 @@
     :no-eval (macroexpand
                '(wiz php-mode
                   :load "/path/to/php-autoload.el"))
-    :result '(prog1 'php-mode (load "/path/to/php-autoload.el"))
+    :result (prog1 'php-mode (load "/path/to/php-autoload.el"))
     :eval (macroexpand
            '(wiz php-mode
               :load-if-exists "/path/to/php-autoload.el"))
