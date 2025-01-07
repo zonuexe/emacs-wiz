@@ -2,6 +2,8 @@
 
 A collection of macros that optimize startup performance by byte-compiling `init.el`.
 
+These macros have **no runtime library** and compile to byte-compiler friendly code.
+
 ## 💾 Installation
 
 This package requires Emacs 29.1+.
@@ -9,7 +11,9 @@ This package requires Emacs 29.1+.
 ### Use package.el
 
 ``` emacs-lisp
-(package-vc-install "git@github.com:zonuexe/emacs-wiz.git" nil 'Git 'wiz)
+(package-vc-install
+ '(wiz :url "git@github.com:zonuexe/emacs-wiz.git"
+       :main-file "wiz.el"))
 ```
 
 ### Use [Borg](https://github.com/emacscollective/borg)
@@ -106,7 +110,7 @@ This package provides macros with a similar purpose to both, but wiz is much sim
    * `:config` and `:init` can now be written on multiple lines without needing to be enclosed in `lambda` like use-package.
  * The output code has no runtime library function calls.
 
-### Tips
+### 💡 Tips
 
 If the elements of the variable do not change dynamically, you can rewrite the code as follows and the code will be evaluated at compile time and further optimized by the byte compiler.
 
