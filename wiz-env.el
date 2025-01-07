@@ -47,11 +47,13 @@
 
 (defmacro wiz-env (name)
   "Import NAME environment variable and expand it."
+  (declare (obsolete 'wiz-env* "0.1.0"))
   `(unless window-system
      ,(wiz-env--1 name (exec-path-from-shell-getenvs (list name)))))
 
 (defmacro wiz-envs (&rest names)
   "Import NAMES environment variable and expand it."
+  (declare (obsolete 'wiz-env* "0.1.0"))
   `(unless window-system
      (prog1 (list ,@names)
        ,@(let* ((names-list (mapcar #'eval names))
@@ -60,6 +62,16 @@
                     for sexp = (wiz-env--1 name envs)
                     if sexp
                     append (macroexp-unprogn sexp))))))
+
+(defmacro wiz-env* (&rest names)
+  "Import NAMES environment variable and expand it."
+  `(prog1 (list ,@names)
+     ,@(let* ((names-list (mapcar #'eval names))
+              (envs (exec-path-from-shell-getenvs names-list)))
+         (cl-loop for name in names-list
+                  for sexp = (wiz-env--1 name envs)
+                  if sexp
+                  append (macroexp-unprogn sexp)))))
 
 (provide 'wiz-env)
 ;;; wiz-env.el ends here

@@ -137,22 +137,21 @@ Optimize GUI Emacs startup overhead by importing environment variables during by
 
 ```emacs-lisp
 (eval-when-compile (require 'wiz-env))
-(wiz-envs "PATH" "SSH_AUTH_SOCK" "MANPATH" "GOPATH")
+(wiz-env* "PATH" "SSH_AUTH_SOCK" "MANPATH" "GOPATH")
 ```
 
 <details>
 <summary>Expression Expanding into the Following Lisp Code:</summary>
 
 ```emacs-lisp
-(unless window-system
-  (prog1
-      (list "PATH" "SSH_AUTH_SOCK" "SSH_AGENT_PID" "MANPATH" "GOROOT" "GOPATH")
-    (setenv "PATH" "/opt/homebrew/bin:/opt/homebrew/sbin:/Users/megurine/local/bin:/usr/bin:/bin:/usr/sbin:/sbin")
-    (setq exec-path
-          (list "/opt/homebrew/bin/" "/opt/homebrew/sbin/" "/Users/megurine/local/bin/" "/usr/bin/" "/bin/" "/usr/sbin/" "/sbin/" exec-directory))
-    (setenv "SSH_AUTH_SOCK" "/private/tmp/com.apple.launchd.hHAlJWPYt1/Listeners")
-    (setenv "MANPATH" "/opt/homebrew/share/man:/usr/share/man:/usr/local/share/man:/opt/homebrew/share/man:")
-    (setenv "GOPATH" "/Users/megurine/repo/go")))
+(prog1
+    (list "PATH" "SSH_AUTH_SOCK" "SSH_AGENT_PID" "MANPATH" "GOROOT" "GOPATH")
+  (setenv "PATH" "/opt/homebrew/bin:/opt/homebrew/sbin:/Users/megurine/local/bin:/usr/bin:/bin:/usr/sbin:/sbin")
+  (setq exec-path
+        (list "/opt/homebrew/bin/" "/opt/homebrew/sbin/" "/Users/megurine/local/bin/" "/usr/bin/" "/bin/" "/usr/sbin/" "/sbin/" exec-directory))
+  (setenv "SSH_AUTH_SOCK" "/private/tmp/com.apple.launchd.hHAlJWPYt1/Listeners")
+  (setenv "MANPATH" "/opt/homebrew/share/man:/usr/share/man:/usr/local/share/man:/opt/homebrew/share/man:")
+  (setenv "GOPATH" "/Users/megurine/repo/go"))
 ```
 
 </details>
