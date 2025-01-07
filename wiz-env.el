@@ -1,10 +1,10 @@
 ;;; wiz-env.el --- Macros to simplify startup initialization  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024  USAMI Kenta
+;; Copyright (C) 2025  USAMI Kenta
 
 ;; Author: USAMI Kenta <tadsan@zonu.me>
 ;; Created: 01 Dec 2023
-;; Version: 0.0.4
+;; Version: 0.1.0
 ;; Keywords: convenience, lisp
 ;; Homepage: https://github.com/zonuexe/emacs-wiz
 ;; License: GPL-3.0-or-later
