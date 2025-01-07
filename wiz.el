@@ -131,6 +131,12 @@ This macro helps with expression expansion at compile time."
     `(prog1 (quote ,sequence)
        ,@(mapcar function sequence))))
 
+(defsubst wiz-concat-symbol (&rest args)
+  "Return a symbol created by concatenating all ARGS.
+Each argument in ARGS can be either a symbol or a string.
+Symbols are converted to their names before concatenation."
+  (intern (mapconcat (lambda (v) (if (symbolp v) (symbol-name v) v)) args "")))
+
 (defmacro wiz-pkg (&rest form)
   "Install package FORM."
   (pcase form
