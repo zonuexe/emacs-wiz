@@ -76,7 +76,7 @@
 (defun wiz--feature-process-1 (feature-name alist keyword spec)
   "Process wiz FEATURE-NAME feature SPEC for ALIST of KEYWORD."
   (cl-check-type feature-name symbol)
-  (when-let (value (cdr-safe (assq keyword alist)))
+  (when-let* ((value (cdr-safe (assq keyword alist))))
     (let ((assert-before (or (plist-get spec :assert-before) #'always))
           (transform (plist-get spec :transform))
           (assert-after (or (plist-get spec :assert-after) #'always))
