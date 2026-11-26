@@ -1,5 +1,5 @@
 (package "wiz"
-         "0.0.4"
+         "0.1.0"
          "Macros to simplify startup initialization")
 
 (website-url "https://github.com/zonuexe/emacs-wiz")
